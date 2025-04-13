@@ -16,7 +16,6 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
 from . import YALEXSBLEConfigEntry
 from .entity import YALEXSBLEEntity
-from .models import YaleXSBLEData
 
 
 async def async_setup_entry(
@@ -24,13 +23,15 @@ async def async_setup_entry(
     entry: YALEXSBLEConfigEntry,
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
-    """Set up securemode switch."""
+    """Setup securemode switch."""
     async_add_entities([YaleXSBLESecuremodeSwitch(entry.runtime_data)])
 
 class YaleXSBLESecuremodeSwitch(YALEXSBLEEntity, SwitchEntity):
     """Securemode switch for a Yale BLE lock."""
 
     _attr_has_entity_name = True
+    # Hide the securemode switch be default
+    _attr_entity_registry_enabled_default = False
     _attr_device_class = SwitchDeviceClass.SWITCH
 
     @property
@@ -52,7 +53,7 @@ class YaleXSBLESecuremodeSwitch(YALEXSBLEEntity, SwitchEntity):
 
     
     async def async_turn_off(self, **kwargs: Any) -> None:
-        """Transition from deadlocked to locked state."""
+        """Unlocks both the deadlock and lock."""
         await self._device.unlock()
 
     async def async_turn_on(self, **kwargs: Any) -> None:
